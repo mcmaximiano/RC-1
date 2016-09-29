@@ -6,3 +6,6 @@ s = socket(AF_INET, SOCK_STREAM)
 s.connect(('guadiana', PORT))
 s.send(msg)
 s.close()
+
+def get_input():
+        return input().split()

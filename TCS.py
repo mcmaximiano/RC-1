@@ -1,17 +1,81 @@
-PORT = 58000
+#!/usr/bin/python3
 
-from socket import\
-        socket,\
-        AF_INET,\
-        SOCK_STREAM,\
-        gethostname
+from nlsocket import * 
+from argparse import ArgumentParser
 
-welcome = socket(AF_INET, SOCK_STREAM)
-welcome.bind((gethostname(), PORT))
-welcome.listen(10)
-(serving_socket, client_addr) = welcome.accept()
-msg = serving_socket.recv(1000)
-welcome.close()
-serving_socket.close()
-for submsg in msg.split(): 
-	print(submsg.decode())
+class TCS:
+
+	TRSdict = { # TODO example only
+		'French' : ('rodrigo', 59001),
+		'English': ('tomas'  , 59002),
+		'Spanish': ('rafael' , 59003),
+	}
+
+	sock = nlsocket(AF_INET, SOCK_DGRAM) # Must be DGRAM!
+	addr = None
+
+	def __init__(self, port): 
+		self.addr = (gethostname(), port) 
+		self.sock.bind(self.addr)
+		
+	def ulr(self, client, args):
+		'''
+		Sends "ULR N L1 L2 L3 ... Ln" through the socket.
+		'''
+		lang_count = str(len(self.TRSdict))
+		langs = ' '.join(self.TRSdict)
+		msg = 'ULR ' + lang_count + ' ' +  langs
+		print('Sending:\n' + msg + '\n...to:', client)
+		msg = msg.encode()
+		self.sock.nlsendto(msg, client)
+		print('Message sent')
+
+	def unr(self, client, args):
+		'''
+		 Sends "UNR IP PORT" through the socket.
+		'''
+		language = args[0]
+		TRS = self.TRSdict[language]
+		msg = 'UNR ' + TRS[0] + ' ' + str(TRS[1])
+		print('Sending message [', msg, '] to', client)
+		msg = msg.encode()
+		self.sock.nlsendto(msg, client)
+		print('Message sent')
+
+	def parse_recv(self, msg):	
+		(req, args) = msg.split(maxsplit=1)
+		args = args.split()
+		
+	def TCSloop(self):
+		''' Loops forever listening for a message on the socket,
+		and then executing the command asked for in that message'''
+		print('Welcome to the TCS! Hosted on', self.addr)
+		while 1:
+			print('Waiting for a request...')
+			(msg, client) = self.sock.nlrecvfrom()
+			print('Got message', msg, 'from', client)
+			msg = msg.decode()
+			cmd = msg[0:3]
+			args = msg[3:].split()
+			#TODO: msg syntax checking before executing
+			if cmd == 'ULQ':
+				self.ulr(client, args)
+			elif cmd == 'UNQ':
+				self.unr(client, args)
+			else:
+				print('Malformed message!')
+		
+def parse_port():                                                               
+    ''' Returns the port number on which this server will run.''' 
+    ap = ArgumentParser() 
+    ap.add_argument('-p', '--port', type=int, 
+	help='Port number on which this server will run.')
+    opts = ap.parse_args()
+    return opts.port if opts.port else 58051
+
+def main():
+	port = parse_port()
+	tcs = TCS(port)
+	tcs.TCSloop()
+
+if __name__ == '__main__': main()

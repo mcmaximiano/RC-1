@@ -33,8 +33,16 @@ def TRSloop(listener):
 				print('Message sent!')
 			# TODO translate words
 			elif (msg[0] == f):
-				
-				
+				filename = msg[1]
+				trans_file_name = get_image_trans_filename('file_translation.txt', filename)
+				answer_file = open(trans_file_name, 'rb')
+				data = file.read()
+				size = len(conteudo)
+				answer = 'TRR ' + msg[0] + ' ' + trans_file_name + ' ' + bytes[size] + ' ' + data 
+				print('Sending file:\n' + trans_file_name + '\n...to:', listener) 
+				answer = answer.encode()
+				self.sock.nlsendto(answer, listener)
+				print('File sent!')
 			# TODO translate file
 			else return 'TRQ ERR'
 				

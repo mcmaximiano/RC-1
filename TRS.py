@@ -22,8 +22,22 @@ def TRSloop(listener):
 	while 1:
 		(server, clientaddr) = listener.accept()
 		msg = recvTRQ(listener)
-			if type(msg == file)
-			# TODO check for file or word translation	
+			if (msg[0] == t):
+				msg_len = str(len(msg)-1)
+				answer = 'TRR ' + msg[0] + ' ' + msg_len
+				for el in msg[1:]
+					answer += ' ' +  get_word_trans('text_translation.txt', el)
+				print('Sending:\n' + answer + '\n...to:', listener)
+				answer = answer.encode()
+				self.sock.nlsendto(answer,listener)
+				print('Message sent!')
+			# TODO translate words
+			elif (msg[0] == f):
+				
+				
+			# TODO translate file
+			else return 'TRQ ERR'
+				
 		
 		
 	

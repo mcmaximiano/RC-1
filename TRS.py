@@ -5,6 +5,7 @@ def get_word_trans(lang_file, word):
 		if tuga == word:
 			return estrg
 	return None # if no such image is avaliable
+
 		
 def get_image_trans_filename(img_file, filename):
 	'''
@@ -18,39 +19,126 @@ def get_image_trans_filename(img_file, filename):
 			return estrgf
 	return None # if no such image is avaliable
 
+
+def sendTRRtext(msg, listener):
+	'''
+	Responds to TRQ t ...
+	'''
+	msg_len = str(len(msg)-1
+	answer = 'TRR ' + msg[0] + ' ' + msg_len
+	for el in msg[1:]
+		answer += ' ' +  get_word_trans('text_translation.txt', el)
+	print('Sending:\n' + answer_msg + '\n...to:', listener)
+	return answer
+
+                       
+def sendTRRfile(msg, listener):
+	'''
+	Responds to TRQ f ...
+	'''
+	filename = msg[1]
+	trans_file_name = get_image_trans_filename('file_translation.txt', filename)
+	answer_file = open(trans_file_name, 'rb')
+	data = file.read()
+	size = len(conteudo)
+	answer = 'TRR ' + msg[0] + ' ' + trans_file_name + ' ' + bytes[size] + ' ' + data 
+	print('Sending file:\n' + trans_file_name + '\n...to:', listener)
+	return answer
+
+
 def TRSloop(listener):
 	while 1:
 		(server, clientaddr) = listener.accept()
 		msg = recvTRQ(listener)
 			if (msg[0] == t):
-				msg_len = str(len(msg)-1)
-				answer = 'TRR ' + msg[0] + ' ' + msg_len
-				for el in msg[1:]
-					answer += ' ' +  get_word_trans('text_translation.txt', el)
-				print('Sending:\n' + answer + '\n...to:', listener)
-				answer = answer.encode()
-				self.sock.nlsendto(answer,listener)
+				answer = sendTRRtext(msg, listener)
+				answer.encode()
+				self.sock.nlsendto(answer, listener)
 				print('Message sent!')
-			# TODO translate words
 			elif (msg[0] == f):
-				filename = msg[1]
-				trans_file_name = get_image_trans_filename('file_translation.txt', filename)
-				answer_file = open(trans_file_name, 'rb')
-				data = file.read()
-				size = len(conteudo)
-				answer = 'TRR ' + msg[0] + ' ' + trans_file_name + ' ' + bytes[size] + ' ' + data 
-				print('Sending file:\n' + trans_file_name + '\n...to:', listener) 
+				answer = sendTRRfile(msg, listener)
 				answer = answer.encode()
 				self.sock.nlsendto(answer, listener)
 				print('File sent!')
-			# TODO translate file
 			else return 'TRQ ERR'
-				
-		
-		
+
+
+def sendSRG(language, IPTRS, portTRS):
 	
+	
+	return NotImplemented
+
+
+def recvSRR():
+	return NotImplemented
+
+
+def sendSUN():
+	return NotImplemented
+
+
+def redcv():
+	return NotImplemented
+
+
+def parseTRSaddr():
+	'''
+	Returns port of the TRS server and the name and port of the TCS server connected
+	'''
+	ap = ArgumentParser()
+	ap.add_argument('-p', '--port', type=int,
+		help='Port number of the TRS server')
+	ap.add_argument('-n', '--nameTCS', type=str,
+		help='Host name of the listening TCS server')
+	ap.add_argument('-e', '--portTCS', type=int,
+		help='Port number of the listening TCS server')
+	opts = ap.parse_args()
+	port = opts.port if opts.port else 59000
+	nameTCS = opts.nameTCS if opts.nameTCS else gethostname()
+	portTCS = opts.portTCS if opts.portTCS else 58051
+	return (port, nameTCS, portTCS)
+
+
+
 
 def main():
+	'''
+	TRS Execution
+	'''
 	listener = nlsocket(AF_INET, SOCK_STREAM)
 	listener.listen(BACKLOG)
+
+	sendSRG()
+	recvSRR()	
+
 	TRSloop(listener)
+
+	sendSUN()
+	recvSUR()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

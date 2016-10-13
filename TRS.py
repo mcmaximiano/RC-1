@@ -63,7 +63,8 @@ def TRSloop(listener):
 			else return 'TRQ ERR'
 
 
-def sendSRG(language, IPTRS, portTRS):
+def sendSRG(lang, nameTRS, port):
+	socket.nlsendto('SRG etc', (TCSip, TCSport)) # TODO FIX
 	
 	
 	return NotImplemented
@@ -95,11 +96,12 @@ def parseTRSaddr():
 	ap.add_argument('-e', '--portTCS', type=int,
 		help='Port number of the listening TCS server')
 	opts = ap.parse_args()
+	nameTRS = gethostname()
 	lang = args.lang
 	port = opts.port if opts.port else 59000
 	nameTCS = opts.nameTCS if opts.nameTCS else gethostname()
 	portTCS = opts.portTCS if opts.portTCS else 58051
-	return (lang, port, nameTCS, portTCS)
+	return (lang, nameTRS, port, nameTCS, portTCS)
 
 
 
@@ -112,12 +114,12 @@ def main():
 	listener.listen(BACKLOG)
 	TRSaddr = parseTRSaddr()
 
-	sendSRG(lang, iptrs, port)
-	recvSRR(status)	
+	sendSRG(lang, nameTRS, port)
+	recvSRR(status)
 
 	TRSloop(listener)
 
-	sendSUN(language, iptrs, porttrs)
+	sendSUN(lang, nameTRS, port)
 	recvSUR(status)
 
 

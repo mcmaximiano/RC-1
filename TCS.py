@@ -18,7 +18,7 @@ class TCS:
 		self.addr = (gethostname(), port) 
 		self.sock.bind(self.addr)
 		
-	def ulr(self, client, args):
+	def sendULR(self, client, args):
 		'''
 		Sends "ULR N L1 L2 L3 ... Ln" through the socket.
 		'''
@@ -45,19 +45,22 @@ class TCS:
 	def parse_recv(self, msg):	
 		(req, args) = msg.split(maxsplit=1)
 		args = args.split()
+
+	def wait_for_msg(self):
+		print('Waiting for a request...')
+		(msg, client) = self.sock.nlrecvfrom()
+		print('Got message', msg, 'from', client)
+
 		
 	def TCSloop(self):
 		''' Loops forever listening for a message on the socket,
 		and then executing the command asked for in that message'''
 		print('Welcome to the TCS! Hosted on', self.addr)
 		while 1:
-			print('Waiting for a request...')
-			(msg, client) = self.sock.nlrecvfrom()
-			print('Got message', msg, 'from', client)
+			self.wait_for_msg()
 			msg = msg.decode()
 			cmd = msg[0:3]
 			args = msg[3:].split()
-			#TODO: msg syntax checking before executing
 			if cmd == 'ULQ':
 				self.ulr(client, args)
 			elif cmd == 'UNQ':

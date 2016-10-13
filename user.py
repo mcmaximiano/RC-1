@@ -19,12 +19,19 @@ class Client(Cmd):
 	def do_list(self, argv):
 		'Query a list of all avaliable languages.'
 		self.TCSsocket.nlsendto('ULQ'.encode(), self.TCS)
-		msg = self.TCSsocket.nlrecv().decode()
 		msg = msg.split()
 		languages = msg[2:]
 		for i in range(len(languages)):
 			print(i,'>', languages[i])
 		self.languages = languages
+
+	def recvULR(self):
+		ulr = self.TCSsocket.nlrecv().decode()
+		return ulr	
+		
+	def recvUNR(self):
+		unr = self.TCSsocket.nlrecv().decode()
+		return unr
 			
 	def do_request(self, args):
 		'Request to connect to a particular TRS.'

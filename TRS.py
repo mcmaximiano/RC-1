@@ -86,6 +86,8 @@ def parseTRSaddr():
 	Returns port of the TRS server and the name and port of the TCS server connected
 	'''
 	ap = ArgumentParser()
+	ap.add_argument('language', type= str,
+		help='Language that the TRS server translates from')
 	ap.add_argument('-p', '--port', type=int,
 		help='Port number of the TRS server')
 	ap.add_argument('-n', '--nameTCS', type=str,
@@ -93,10 +95,11 @@ def parseTRSaddr():
 	ap.add_argument('-e', '--portTCS', type=int,
 		help='Port number of the listening TCS server')
 	opts = ap.parse_args()
+	lang = args.lang
 	port = opts.port if opts.port else 59000
 	nameTCS = opts.nameTCS if opts.nameTCS else gethostname()
 	portTCS = opts.portTCS if opts.portTCS else 58051
-	return (port, nameTCS, portTCS)
+	return (lang, port, nameTCS, portTCS)
 
 
 
@@ -107,14 +110,15 @@ def main():
 	'''
 	listener = nlsocket(AF_INET, SOCK_STREAM)
 	listener.listen(BACKLOG)
+	TRSaddr = parseTRSaddr()
 
-	sendSRG()
-	recvSRR()	
+	sendSRG(lang, iptrs, port)
+	recvSRR(status)	
 
 	TRSloop(listener)
 
-	sendSUN()
-	recvSUR()
+	sendSUN(language, iptrs, porttrs)
+	recvSUR(status)
 
 
 

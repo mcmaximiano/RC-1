@@ -64,22 +64,44 @@ def TRSloop(listener):
 
 
 def sendSRG(lang, nameTRS, port):
-	socket.nlsendto('SRG etc', (TCSip, TCSport)) # TODO FIX
-	
-	
-	return NotImplemented
-
+	msg = 'SRG ' + ' ' + lang + ' ' + nameTRS + ' ' + port
+	sock.nlsendto(msg, (TCSip, TCSport))
+	print('SRG Msg sent!')
+	return msg
 
 def recvSRR():
-	return NotImplemented
-
+	if sock.recv(4) == b'SRR ':
+		2nd = sock.recv(2)
+		if 2nd == 'OK':
+			status = 'OK'
+			return status
+		elif 2nd == 'NO':
+			status = 'NOK'
+			return status
+		else:
+			status = 'SRR ERR'
+			return status
 
 def sendSUN():
-	return NotImplemented
+	msg = 'SUN ' + ' ' + lang + ' ' + nameTRS + ' ' + port
+	sock.nlsendto(msg, (TCSip, TCSport))
+	print('SUN Msg sent!')
+	return msg
 
 
 def redcv():
-	return NotImplemented
+	if sock.recv(4) == b'SUR ':
+		2nd = sock.recv(2)
+		if 2nd == 'OK':
+			status = 'OK'
+			return status
+		elif 2nd == 'NO':
+			status = 'NOK'
+			return status
+		else:
+			status = 'SUR ERR'
+			return status
+
 
 
 def parseTRSaddr():
@@ -118,7 +140,7 @@ def main():
 	recvSRR(status)
 
 	TRSloop(listener)
-
+	#TODO Sair do TRSloop aquando do CTRL+C
 	sendSUN(lang, nameTRS, port)
 	recvSUR(status)
 

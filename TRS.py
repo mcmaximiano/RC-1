@@ -89,7 +89,7 @@ def sendSUN():
 	return msg
 
 
-def redcv():
+def recvSUR():
 	if sock.recv(4) == b'SUR ':
 		2nd = sock.recv(2)
 		if 2nd == 'OK':
@@ -125,7 +125,45 @@ def parseTRSaddr():
 	portTCS = opts.portTCS if opts.portTCS else 58051
 	return (lang, nameTRS, port, nameTCS, portTCS)
 
+def parseSRR():
+	sp = unq.split(b' ')
+	if len(sp) == 2 and sp[0] == b'SRR' and 
+	(sp[1] == b'ERR' or sp[1] == b'OK' or sp[1] == b'ERR') and
+	srg.endswith(b'\n'):
+		return sp[1].decode()
 
+def parseSUR(TRSsock, TRSaddr):
+	return NotImplemented #TODO
+
+def recvTRQ(TRSsock):
+	if sock.recv(4) == b'TRQ ':
+		2nd = sock.recv(1)
+		if 2nd == 't':
+			return recvTRRtext()
+		elif 2nd == 'f':
+			return recvTRRfile()
+	return None
+
+	def recvTRQfile():
+		filename = b''
+		while not filename.endswith(b' '):
+			filename += sock.recv(1)
+		size = b''
+		while not size.endswith(b' '):
+			size += sock.recv(1)
+		content  = recv(int(size))
+		return ('f', filename.decode(), content)
+				
+	def recvTRQtext():
+		words = ()
+		N = recv_word(3)
+		if not N.isidigit():
+			return None
+		for _ in range(int(N)):
+			words.append(recv_word(LANG_LEN))
+		if not recv(1) == b'\n':
+			return None
+		return words
 
 
 def main():
@@ -143,30 +181,3 @@ def main():
 	#TODO Sair do TRSloop aquando do CTRL+C
 	sendSUN(lang, nameTRS, port)
 	recvSUR(status)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
